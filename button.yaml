@@ -29,9 +29,9 @@ binary_sensor:
                   - not:
                       - api.connected:
                       - wifi.connected:
-                  - ${relay_${number}_type}.is_off: '${relay_${number}_type}${number}'
+                  - ${relay_type}.is_off: '${relay_type}${number}'
               then:
-                - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
+                - ${relay_type}.toggle: '${relay_type}${number}'
           - logger.log: 'Button ${number} Click'
           - homeassistant.event:
               event: esphome.button_pressed
@@ -46,11 +46,11 @@ binary_sensor:
         invalid_cooldown: 0s
         then:
           - logger.log: 'Toggle Output ${number}'
-          - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
+          - ${relay_type}.toggle: '${relay_type}${number}'
           
       # Button Hold
       - timing:
-          - 'ON for at least ${button_${number}_hold}'
+          - 'ON for at least ${button_hold}'
         invalid_cooldown: 0s
         then:
           - while:
@@ -64,11 +64,11 @@ binary_sensor:
                     device: ${name}
                     action: hold
                     button: '${number}'
-              - delay: '${button_${number}_repeat}'
+              - delay: '${button_repeat}'
       
       # Button Released
       - timing:
-          - 'ON for at least ${button_${number}_hold}'
+          - 'ON for at least ${button_hold}'
           - OFF for at least 500ms
         invalid_cooldown: 0s
         then:
