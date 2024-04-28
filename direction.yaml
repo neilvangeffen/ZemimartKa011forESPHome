@@ -1,0 +1,12 @@
+platform: template
+name: '${name}'
+id: 'direction${number}'
+options:
+ - "Increase"
+ - "Decrease"
+initial_option: "Increase"
+optimistic: true
+set_action:
+  - logger.log:
+      format: "Direction ${number}: %s"
+      args: ["x.c_str()"]
