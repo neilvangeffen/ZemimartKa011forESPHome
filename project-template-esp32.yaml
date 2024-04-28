@@ -105,23 +105,23 @@ improv_serial:
 # Actual Code livel below here
 ##########################################################
 
-#---
-#binary_sensor:
-#  - <<: !include
-#      file: button.yaml
-#      vars:
-#        number: "1"
-#        gpio_pin: GPIO7
-#  - <<: !include
-#      file: button.yaml
-#      vars:
-#        number: "2"
-#        gpio_pin: GPIO5
-#  - <<: !include
-#      file: button.yaml
-#      vars:
-#        number: "3"
-#        gpio_pin: GPIO4
+---
+binary_sensor:
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "1"
+        gpio_pin: GPIO7
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "2"
+        gpio_pin: GPIO5
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "3"
+        gpio_pin: GPIO4
 
 output:
   - platform: gpio
@@ -148,22 +148,22 @@ switch:
     output: relay3
     name: ${friendly_name} Relay 3
 
-#select:        
-#  - <<: !include
-#      file: direction.yaml
-#      vars:
-#        name: ${friendly_name} Direction 1
-#        number: "1"
-#  - <<: !include
-#      file: direction.yaml
-#      vars:
-#        name: ${friendly_name} Direction 2
-#        number: "2"
-#  - <<: !include
-#      file: direction.yaml
-#      vars:
-#        name: ${friendly_name} Direction 3
-#        number: "3"
+select:        
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 1
+        number: "1"
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 2
+        number: "2"
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 3
+        number: "3"
 
 light:
   - platform: esp32_rmt_led_strip
