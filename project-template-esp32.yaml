@@ -60,7 +60,7 @@ wifi:
 # to provision wifi credentials to the device.
 captive_portal:
 
-sensors:
+sensor:
   - platform: uptime
     name: "${friendly_name} Uptime"
     id: uptime_sensor
@@ -69,12 +69,12 @@ sensors:
     update_interval: 60s
     id: wifi_signal_sensor
 
-buttons:
+button:
   - platform: restart
     name: "${friendly_name} Restart"
     id: restart_button
 
-binary_sensors:
+binary_sensor:
   - platform: status
     name: "${friendly_name} Node Status"
     id: system_status
