@@ -21,7 +21,6 @@ on_multi_click:
       - if:
           condition:
             or:
-              - lambda: 'return ${switch_relay_${number}};'
               - not:
                   - api.connected:
                   - wifi.connected:
