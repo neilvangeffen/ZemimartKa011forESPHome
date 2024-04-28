@@ -1,106 +1,111 @@
----
-platform: gpio
-name: 'Button ${number}'
-id: 'sw${number}'
-pin:
-  inverted: true
-  number: ${gpio_pin}
-  mode:
-    input: true
-    pullup: true
-filters:
-  - delayed_on_off: 10ms
-disabled_by_default: true
-on_multi_click:
-  # Normal Click
-  - timing:
-      - ON for at most 500ms
-      - OFF for at least 10ms
-    invalid_cooldown: 0s
-    then:
-      - if:
-          condition:
-            or:
-              - not:
-                  - api.connected:
-                  - wifi.connected:
-              - ${relay_${number}_type}.is_off: '${relay_${number}_type}${number}'
-          then:
-            - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
-      - logger.log: 'Button ${number} Click'
-      - homeassistant.event:
-          event: esphome.button_pressed
-          data:
-            device: ${name}
-            action: click
-            button: '${number}'
-  
-  # Force toggle output
-  - timing:
-      - ON for at least 45s
-    invalid_cooldown: 0s
-    then:
-      - logger.log: 'Toggle Output ${number}'
-      - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
-      
-  # Button Hold
-  - timing:
-      - 'ON for at least ${button_${number}_hold}'
-    invalid_cooldown: 0s
-    then:
-      - while:
-          condition:
-            binary_sensor.is_on: 'sw${number}'
-          then:
-          - logger.log: 'Button ${number} Held'
+defaults:
+  button_hold: "0.6s"
+  button_repeat: "0.5s"
+
+binary_sensor:
+  - platform: gpio
+    name: 'Button ${number}'
+    id: 'sw${number}'
+    pin:
+      inverted: true
+      number: ${gpio_pin}
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_on_off: 10ms
+    disabled_by_default: true
+    on_multi_click:
+      # Normal Click
+      - timing:
+          - ON for at most 500ms
+          - OFF for at least 10ms
+        invalid_cooldown: 0s
+        then:
+          - if:
+              condition:
+                or:
+                  - lambda: 'return ${switch_relay_${number}};'
+                  - not:
+                      - api.connected:
+                      - wifi.connected:
+                  - ${relay_${number}_type}.is_off: '${relay_${number}_type}${number}'
+              then:
+                - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
+          - logger.log: 'Button ${number} Click'
           - homeassistant.event:
               event: esphome.button_pressed
               data:
                 device: ${name}
-                action: hold
+                action: click
                 button: '${number}'
-          - delay: '${button_${number}_repeat}'
-  
-  # Button Released
-  - timing:
-      - 'ON for at least ${button_${number}_hold}'
-      - OFF for at least 500ms
-    invalid_cooldown: 0s
-    then:
-      - logger.log: 'Button ${number} Released'
-      - homeassistant.event:
-          event: esphome.button_pressed
-          data:
-            device: ${name}
-            action: release
-            button: '${number}'
-  
-  # Direction Change
-  - timing:
-      - OFF for at most 400ms
-      - ON for at least 200ms
-    invalid_cooldown: 0s
-    then:
-      - logger.log: 'Direction Change ${number}'
-      - homeassistant.event:
-          event: esphome.button_pressed
-          data:
-            device: ${name}
-            action: direction
-            button: '${number}'
-  
-  # Mode Change
-  - timing:
-      - ON for at most 500ms
-      - OFF for at most 400ms
-      - ON for at most 500ms
-      - OFF for at least 100ms
-    invalid_cooldown: 0s
-    then:
-      - logger.log: 'Mode Change ${number}'
-      - homeassistant.event:
-          event: esphome.button_pressed
-          data:
-            device: ${name}
-            action: mode
-            button: '${number}'
+      
+      # Force toggle output
+      - timing:
+          - ON for at least 45s
+        invalid_cooldown: 0s
+        then:
+          - logger.log: 'Toggle Output ${number}'
+          - ${relay_${number}_type}.toggle: '${relay_${number}_type}${number}'
+          
+      # Button Hold
+      - timing:
+          - 'ON for at least ${button_${number}_hold}'
+        invalid_cooldown: 0s
+        then:
+          - while:
+              condition:
+                binary_sensor.is_on: 'sw${number}'
+              then:
+              - logger.log: 'Button ${number} Held'
+              - homeassistant.event:
+                  event: esphome.button_pressed
+                  data:
+                    device: ${name}
+                    action: hold
+                    button: '${number}'
+              - delay: '${button_${number}_repeat}'
+      
+      # Button Released
+      - timing:
+          - 'ON for at least ${button_${number}_hold}'
+          - OFF for at least 500ms
+        invalid_cooldown: 0s
+        then:
+          - logger.log: 'Button ${number} Released'
+          - homeassistant.event:
+              event: esphome.button_pressed
+              data:
+                device: ${name}
+                action: release
+                button: '${number}'
+      
+      # Direction Change
+      - timing:
+          - OFF for at most 400ms
+          - ON for at least 200ms
+        invalid_cooldown: 0s
+        then:
+          - logger.log: 'Direction Change ${number}'
+          - homeassistant.event:
+              event: esphome.button_pressed
+              data:
+                device: ${name}
+                action: direction
+                button: '${number}'
+      
+      # Mode Change
+      - timing:
+          - ON for at most 500ms
+          - OFF for at most 400ms
+          - ON for at most 500ms
+          - OFF for at least 100ms
+        invalid_cooldown: 0s
+        then:
+          - logger.log: 'Mode Change ${number}'
+          - homeassistant.event:
+              event: esphome.button_pressed
+              data:
+                device: ${name}
+                action: mode
+                button: '${number}'
