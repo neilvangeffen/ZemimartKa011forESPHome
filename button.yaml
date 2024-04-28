@@ -26,7 +26,7 @@ binary_sensor:
           - if:
               condition:
                 or:
-                  - lambda: 'return ${relay_type${number}};'
+                  - lambda: 'return ${relay_type}${number};'
                   - not:
                       - api.connected:
                       - wifi.connected:
