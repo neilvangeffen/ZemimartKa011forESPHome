@@ -1,6 +1,9 @@
 # These substitutions allow the end user to override certain values
 substitutions:
-  name: "project-template"
+  name: "ka-switch"
+  friendly_name: Ka011 Switch
+  wifi_reboot_timeout: 0s
+  api_timeout: 0s
 
 esphome:
   name: "${name}"
@@ -11,11 +14,17 @@ esphome:
   # This will allow for (future) project identification,
   # configuration and updates.
   project:
-    name: esphome.project-template
+    name: ned.zemismart-ka011-switch
     version: "1.0"
+  
+  platformio_options:
+    board_build.f_flash: 40000000L
+    board_build.flash_mode: dio
+    board_build.flash_size: 4MB
 
 esp32:
-  board: esp32dev
+  variant: ESP32C3
+  board: esp32-c3-devkitm-1
   framework:
     type: arduino
 
@@ -41,12 +50,36 @@ wifi:
 # to provision wifi credentials to the device.
 captive_portal:
 
+sensors:
+  platform: uptime
+    name: "${friendly_name} Uptime"
+    id: uptime_sensor
+  platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    update_interval: 60s
+    id: wifi_signal_sensor
+
+buttons:
+  platform: restart
+    name: "${friendly_name} Restart"
+    id: restart_button
+
+binary_sensors:
+  platform: status
+    name: "${friendly_name} Node Status"
+    id: system_status
+
+time:
+  platform: homeassistant
+    id: homeassistant_time
+  platform: sntp
+    id: sntp_time
+
 ##########################################################
 # Most projects should not remove anything from above here
 # and should just modify the name, project name/version 
 # and git url for the dashboard_import
 ##########################################################
-
 
 # Sets up Bluetooth LE (Only on ESP32) to allow the user
 # to provision wifi credentials to the device.
@@ -56,3 +89,131 @@ esp32_improv:
 # Sets up the improv via serial client for Wi-Fi provisioning.
 # Handy if your device has a usb port for the user to add credentials when they first get it.
 improv_serial:
+
+
+##########################################################
+# Actual Code livel below here
+##########################################################
+
+---
+binary_sensor:
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "1"
+        gpio_pin: GPIO7
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "2"
+        gpio_pin: GPIO5
+  - <<: !include
+      file: button.yaml
+      vars:
+        number: "3"
+        gpio_pin: GPIO4
+
+output:
+  - platform: gpio
+    id: relay1
+    pin: GPIO10
+  - platform: gpio
+    id: relay2
+    pin: GPIO1
+  - platform: gpio
+    id: relay3
+    pin: GPIO0
+
+switch:
+  - platform: output
+    id: switch1
+    output: relay1
+    name: ${friendly_name} Relay 1
+  - platform: output
+    id: switch2
+    output: relay2
+    name: ${friendly_name} Relay 2
+  - platform: output
+    id: switch3
+    output: relay3
+    name: ${friendly_name} Relay 3
+
+select:        
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 1
+        number: "1"
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 2
+        number: "2"
+  - <<: !include
+      file: direction.yaml
+      vars:
+        name: ${friendly_name} Direction 3
+        number: "3"
+
+light:
+  - platform: esp32_rmt_led_strip
+    rgb_order: GRB
+    pin: GPIO6
+    num_leds: 3
+    rmt_channel: 0
+    chipset: ws2812
+    id: lightStrip
+    internal: true
+  
+  - platform: partition
+    name: ${friendly_name} LED Bottom
+    id: botLED
+    segments:
+      - id: lightStrip
+        from: 0
+        to: 0
+    effects:
+      - pulse:
+          transition_length: 1s
+          update_interval: 1s
+          min_brightness: 20%
+          max_brightness: 50%
+  
+  - platform: partition
+    name: ${friendly_name} LED Top
+    id: topLED
+    segments:
+      - id: lightStrip
+        from: 1
+        to: 1
+    effects:
+      - pulse:
+          transition_length: 1s
+          update_interval: 1s
+          min_brightness: 20%
+          max_brightness: 50%
+  
+  - platform: partition
+    name: ${friendly_name} LED Middle
+    id: midLED
+    segments:
+      - id: lightStrip
+        from: 2
+        to: 2
+    effects:
+      - pulse:
+          transition_length: 1s
+          update_interval: 1s
+          min_brightness: 20%
+          max_brightness: 50%
+
+substitutions:
+  relay_1_type: switch
+  relay_2_type: switch
+  relay_3_type: switch
+  button_1_hold: 0.6s
+  button_2_hold: 0.6s
+  button_3_hold: 0.6s
+  button_1_repeat: 0.5s
+  button_2_repeat: 0.5s
+  button_3_repeat: 0.5s
