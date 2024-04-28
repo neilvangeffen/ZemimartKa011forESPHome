@@ -4,6 +4,16 @@ substitutions:
   friendly_name: Ka011 Switch
   wifi_reboot_timeout: 0s
   api_timeout: 0s
+  button_1_hold: 0.6s
+  button_2_hold: 0.6s
+  button_3_hold: 0.6s
+  button_1_repeat: 0.5s
+  button_2_repeat: 0.5s
+  button_3_repeat: 0.5s
+  # Dont mess with these plz
+  relay_1_type: switch
+  relay_2_type: switch
+  relay_3_type: switch
 
 esphome:
   name: "${name}"
@@ -206,14 +216,3 @@ light:
           update_interval: 1s
           min_brightness: 20%
           max_brightness: 50%
-
-substitutions:
-  relay_1_type: switch
-  relay_2_type: switch
-  relay_3_type: switch
-  button_1_hold: 0.6s
-  button_2_hold: 0.6s
-  button_3_hold: 0.6s
-  button_1_repeat: 0.5s
-  button_2_repeat: 0.5s
-  button_3_repeat: 0.5s
