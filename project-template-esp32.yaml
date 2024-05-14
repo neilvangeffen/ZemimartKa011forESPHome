@@ -105,12 +105,12 @@ packages:
     file: button.yaml
     vars:
       number: "2"
-      gpio_pin: GPIO5
+      gpio_pin: GPIO4
   button_3: !include
     file: button.yaml
     vars:
       number: "3"
-      gpio_pin: GPIO4
+      gpio_pin: GPIO5
       
   direction_1: !include
     file: direction.yaml
