@@ -6,9 +6,13 @@
   "builds": [
     {
       "chipFamily": "ESP32-C3",
+      "ota": {
+        "path": "ka-switch-esp32c3/ka-switch-esp32c3.ota.bin",
+        "md5": "6ed85012daa2dbd2928bd6b714513fce"
+      },
       "parts": [
         {
-          "path": "ka-switch-esp32/ka-switch-esp32.bin",
+          "path": "ka-switch-esp32c3/ka-switch-esp32c3.factory.bin",
           "offset": 0
         }
       ]

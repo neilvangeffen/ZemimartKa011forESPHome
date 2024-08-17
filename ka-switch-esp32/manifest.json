@@ -1,9 +1,0 @@
-{
-  "chipFamily": "ESP32-C3",
-  "parts": [
-    {
-      "path": "ka-switch-esp32/ka-switch-esp32.bin",
-      "offset": 0
-    }
-  ]
-}
